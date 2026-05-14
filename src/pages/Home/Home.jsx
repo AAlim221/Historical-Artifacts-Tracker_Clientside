@@ -1,18 +1,27 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import axios from "axios";
+
 import Banner from "../../pages/Home/Banner";
 
 const Home = () => {
   const [artifacts, setArtifacts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     document.title = "Home | ArtifactVault";
 
-    fetch("http://localhost:5000/featured-artifacts")
-      .then((res) => res.json())
-      .then((data) => setArtifacts(data))
-      .catch((error) => console.log(error));
+    axios
+      .get("http://localhost:3000/featured-artifacts")
+      .then((res) => {
+        setArtifacts(res.data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.log(error);
+        setLoading(false);
+      });
   }, []);
 
   return (
@@ -33,46 +42,56 @@ const Home = () => {
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {artifacts.map((artifact) => (
-            <motion.div
-              key={artifact._id}
-              whileHover={{ y: -8 }}
-              className="card bg-white shadow-xl border border-yellow-100 overflow-hidden"
-            >
-              <figure>
-                <img
-                  src={artifact.artifactImage}
-                  alt={artifact.artifactName}
-                  className="h-64 w-full object-cover"
-                />
-              </figure>
+        {loading ? (
+          <div className="flex justify-center items-center py-20">
+            <span className="loading loading-spinner loading-lg text-warning"></span>
+          </div>
+        ) : artifacts.length === 0 ? (
+          <p className="text-center text-gray-500">
+            No featured artifacts found.
+          </p>
+        ) : (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {artifacts.map((artifact) => (
+              <motion.div
+                key={artifact._id}
+                whileHover={{ y: -8 }}
+                className="card bg-white shadow-xl border border-yellow-100 overflow-hidden"
+              >
+                <figure>
+                  <img
+                    src={artifact.artifactImage}
+                    alt={artifact.artifactName}
+                    className="h-64 w-full object-cover"
+                  />
+                </figure>
 
-              <div className="card-body">
-                <h3 className="card-title text-[#2b1d12]">
-                  {artifact.artifactName}
-                </h3>
+                <div className="card-body">
+                  <h3 className="card-title text-[#2b1d12]">
+                    {artifact.artifactName}
+                  </h3>
 
-                <p className="text-gray-600">
-                  {artifact.shortDescription?.slice(0, 100)}...
-                </p>
+                  <p className="text-gray-600">
+                    {artifact.shortDescription?.slice(0, 100)}...
+                  </p>
 
-                <p className="font-bold text-yellow-600">
-                  ❤️ Likes: {artifact.likeCount || 0}
-                </p>
+                  <p className="font-bold text-yellow-600">
+                    ❤️ Likes: {artifact.likeCount || 0}
+                  </p>
 
-                <div className="card-actions justify-end">
-                  <Link
-                    to={`/artifact/${artifact._id}`}
-                    className="btn bg-[#2b1d12] hover:bg-yellow-600 text-white border-none"
-                  >
-                    View Details
-                  </Link>
+                  <div className="card-actions justify-end">
+                    <Link
+                      to={`/artifact/${artifact._id}`}
+                      className="btn bg-[#2b1d12] hover:bg-yellow-600 text-white border-none"
+                    >
+                      View Details
+                    </Link>
+                  </div>
                 </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
 
         <div className="text-center mt-10">
           <Link
@@ -93,7 +112,9 @@ const Home = () => {
                 whileHover={{ scale: 1.04 }}
                 className="bg-[#2b1d12] text-white p-8 rounded-3xl shadow-xl text-center"
               >
-                <h3 className="text-2xl font-bold text-yellow-400">{item}</h3>
+                <h3 className="text-2xl font-bold text-yellow-400">
+                  {item}
+                </h3>
                 <p className="mt-3 text-gray-200">
                   Explore valuable objects that shaped human civilization.
                 </p>

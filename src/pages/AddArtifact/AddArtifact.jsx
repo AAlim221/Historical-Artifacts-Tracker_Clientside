@@ -1,11 +1,13 @@
 import { useContext } from "react";
 import toast from "react-hot-toast";
+import axios from "axios";
+
 import AuthContext from "../../context/AuthContext";
 
 const AddArtifact = () => {
   const { user } = useContext(AuthContext);
 
-  const handleAddArtifact = (e) => {
+  const handleAddArtifact = async (e) => {
     e.preventDefault();
 
     const form = e.target;
@@ -28,23 +30,20 @@ const AddArtifact = () => {
       likedBy: [],
     };
 
-    fetch("http://localhost:5000/artifacts", {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-      },
-      body: JSON.stringify(newArtifact),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.insertedId) {
-          toast.success("Artifact added successfully");
-          form.reset();
-        }
-      })
-      .catch(() => {
-        toast.error("Failed to add artifact");
-      });
+    try {
+      const { data } = await axios.post(
+        "http://localhost:3000/artifacts",
+        newArtifact
+      );
+
+      if (data.insertedId) {
+        toast.success("Artifact added successfully");
+        form.reset();
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to add artifact");
+    }
   };
 
   return (
@@ -54,9 +53,13 @@ const AddArtifact = () => {
           Add New Artifact
         </h2>
 
-        <form onSubmit={handleAddArtifact} className="grid md:grid-cols-2 gap-6">
+        <form
+          onSubmit={handleAddArtifact}
+          className="grid md:grid-cols-2 gap-6"
+        >
           <div>
             <label className="label font-semibold">Artifact Name</label>
+
             <input
               type="text"
               name="artifactName"
@@ -67,7 +70,10 @@ const AddArtifact = () => {
           </div>
 
           <div>
-            <label className="label font-semibold">Artifact Image URL</label>
+            <label className="label font-semibold">
+              Artifact Image URL
+            </label>
+
             <input
               type="url"
               name="artifactImage"
@@ -79,6 +85,7 @@ const AddArtifact = () => {
 
           <div>
             <label className="label font-semibold">Artifact Type</label>
+
             <select
               name="artifactType"
               className="select select-bordered w-full"
@@ -97,6 +104,7 @@ const AddArtifact = () => {
 
           <div>
             <label className="label font-semibold">Created At</label>
+
             <input
               type="text"
               name="createdAt"
@@ -108,6 +116,7 @@ const AddArtifact = () => {
 
           <div>
             <label className="label font-semibold">Discovered At</label>
+
             <input
               type="text"
               name="discoveredAt"
@@ -119,6 +128,7 @@ const AddArtifact = () => {
 
           <div>
             <label className="label font-semibold">Discovered By</label>
+
             <input
               type="text"
               name="discoveredBy"
@@ -130,6 +140,7 @@ const AddArtifact = () => {
 
           <div>
             <label className="label font-semibold">Present Location</label>
+
             <input
               type="text"
               name="presentLocation"
@@ -141,6 +152,7 @@ const AddArtifact = () => {
 
           <div>
             <label className="label font-semibold">Adder Name</label>
+
             <input
               type="text"
               value={user?.displayName || ""}
@@ -151,6 +163,7 @@ const AddArtifact = () => {
 
           <div>
             <label className="label font-semibold">Adder Email</label>
+
             <input
               type="email"
               value={user?.email || ""}
@@ -160,7 +173,10 @@ const AddArtifact = () => {
           </div>
 
           <div className="md:col-span-2">
-            <label className="label font-semibold">Short Description</label>
+            <label className="label font-semibold">
+              Short Description
+            </label>
+
             <textarea
               name="shortDescription"
               className="textarea textarea-bordered w-full"
@@ -170,7 +186,10 @@ const AddArtifact = () => {
           </div>
 
           <div className="md:col-span-2">
-            <label className="label font-semibold">Historical Context</label>
+            <label className="label font-semibold">
+              Historical Context
+            </label>
+
             <textarea
               name="historicalContext"
               className="textarea textarea-bordered w-full min-h-32"

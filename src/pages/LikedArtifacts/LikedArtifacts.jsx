@@ -1,21 +1,39 @@
 import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
+
 import AuthContext from "../../context/AuthContext";
 
 const LikedArtifacts = () => {
   const { user } = useContext(AuthContext);
+
   const [artifacts, setArtifacts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     document.title = "Liked Artifacts | ArtifactVault";
 
     if (user?.email) {
-      fetch(`http://localhost:5000/liked-artifacts?email=${user.email}`)
-        .then((res) => res.json())
-        .then((data) => setArtifacts(data))
-        .catch((error) => console.log(error));
+      axios
+        .get(`http://localhost:3000/liked-artifacts?email=${user.email}`)
+        .then((res) => {
+          setArtifacts(res.data);
+          setLoading(false);
+        })
+        .catch((error) => {
+          console.log(error);
+          setLoading(false);
+        });
     }
   }, [user?.email]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex justify-center items-center">
+        <span className="loading loading-spinner loading-lg text-warning"></span>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#f8f4ec] py-10 px-4">

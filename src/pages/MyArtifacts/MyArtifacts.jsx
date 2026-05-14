@@ -1,22 +1,30 @@
 import { useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import axios from "axios";
+
 import AuthContext from "../../context/AuthContext";
 
 const MyArtifacts = () => {
   const { user } = useContext(AuthContext);
+
   const [artifacts, setArtifacts] = useState([]);
   const [loading, setLoading] = useState(true);
+
   const navigate = useNavigate();
 
   useEffect(() => {
     document.title = "My Artifacts | ArtifactVault";
 
     if (user?.email) {
-      fetch(`http://localhost:5000/my-artifacts?email=${user.email}`)
-        .then((res) => res.json())
-        .then((data) => {
-          setArtifacts(data);
+      axios
+        .get(`http://localhost:3000/my-artifacts?email=${user.email}`)
+        .then((res) => {
+          setArtifacts(res.data);
+          setLoading(false);
+        })
+        .catch((error) => {
+          console.log(error);
           setLoading(false);
         });
     }
@@ -33,13 +41,15 @@ const MyArtifacts = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        fetch(`http://localhost:5000/artifacts/${id}`, {
-          method: "DELETE",
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            if (data.deletedCount > 0) {
-              Swal.fire("Deleted!", "Artifact deleted successfully.", "success");
+        axios
+          .delete(`http://localhost:5000/artifacts/${id}`)
+          .then((res) => {
+            if (res.data.deletedCount > 0) {
+              Swal.fire(
+                "Deleted!",
+                "Artifact deleted successfully.",
+                "success"
+              );
 
               const remaining = artifacts.filter(
                 (artifact) => artifact._id !== id
@@ -48,6 +58,10 @@ const MyArtifacts = () => {
               setArtifacts(remaining);
               navigate("/all-artifacts");
             }
+          })
+          .catch((error) => {
+            console.log(error);
+            Swal.fire("Error!", "Failed to delete artifact.", "error");
           });
       }
     });

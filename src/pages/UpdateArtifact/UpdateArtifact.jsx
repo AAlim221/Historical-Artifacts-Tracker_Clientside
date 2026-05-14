@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
+import axios from "axios";
 
 const UpdateArtifact = () => {
   const { id } = useParams();
+
   const navigate = useNavigate();
 
   const [artifact, setArtifact] = useState(null);
@@ -12,15 +14,20 @@ const UpdateArtifact = () => {
   useEffect(() => {
     document.title = "Update Artifact | ArtifactVault";
 
-    fetch(`http://localhost:5000/artifacts/${id}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setArtifact(data);
+    axios
+      .get(`http://localhost:3000/artifacts/${id}`)
+      .then((res) => {
+        setArtifact(res.data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.log(error);
+        toast.error("Failed to load artifact");
         setLoading(false);
       });
   }, [id]);
 
-  const handleUpdateArtifact = (e) => {
+  const handleUpdateArtifact = async (e) => {
     e.preventDefault();
 
     const form = e.target;
@@ -37,21 +44,20 @@ const UpdateArtifact = () => {
       presentLocation: form.presentLocation.value,
     };
 
-    fetch(`http://localhost:5000/artifacts/${id}`, {
-      method: "PUT",
-      headers: {
-        "content-type": "application/json",
-      },
-      body: JSON.stringify(updatedArtifact),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.modifiedCount > 0) {
-          toast.success("Artifact updated successfully");
-          navigate("/my-artifacts");
-        }
-      })
-      .catch(() => toast.error("Failed to update artifact"));
+    try {
+      const { data } = await axios.put(
+        `http://localhost:3000/artifacts/${id}`,
+        updatedArtifact
+      );
+
+      if (data.modifiedCount > 0) {
+        toast.success("Artifact updated successfully");
+        navigate("/my-artifacts");
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to update artifact");
+    }
   };
 
   if (loading) {
@@ -69,9 +75,13 @@ const UpdateArtifact = () => {
           Update Artifact
         </h2>
 
-        <form onSubmit={handleUpdateArtifact} className="grid md:grid-cols-2 gap-6">
+        <form
+          onSubmit={handleUpdateArtifact}
+          className="grid md:grid-cols-2 gap-6"
+        >
           <div>
             <label className="label font-semibold">Artifact Name</label>
+
             <input
               type="text"
               name="artifactName"
@@ -82,7 +92,10 @@ const UpdateArtifact = () => {
           </div>
 
           <div>
-            <label className="label font-semibold">Artifact Image URL</label>
+            <label className="label font-semibold">
+              Artifact Image URL
+            </label>
+
             <input
               type="url"
               name="artifactImage"
@@ -94,6 +107,7 @@ const UpdateArtifact = () => {
 
           <div>
             <label className="label font-semibold">Artifact Type</label>
+
             <select
               name="artifactType"
               defaultValue={artifact?.artifactType}
@@ -101,6 +115,7 @@ const UpdateArtifact = () => {
               required
             >
               <option value="">Select Type</option>
+
               <option value="Tools">Tools</option>
               <option value="Weapons">Weapons</option>
               <option value="Documents">Documents</option>
@@ -113,6 +128,7 @@ const UpdateArtifact = () => {
 
           <div>
             <label className="label font-semibold">Created At</label>
+
             <input
               type="text"
               name="createdAt"
@@ -124,6 +140,7 @@ const UpdateArtifact = () => {
 
           <div>
             <label className="label font-semibold">Discovered At</label>
+
             <input
               type="text"
               name="discoveredAt"
@@ -135,6 +152,7 @@ const UpdateArtifact = () => {
 
           <div>
             <label className="label font-semibold">Discovered By</label>
+
             <input
               type="text"
               name="discoveredBy"
@@ -145,7 +163,10 @@ const UpdateArtifact = () => {
           </div>
 
           <div className="md:col-span-2">
-            <label className="label font-semibold">Present Location</label>
+            <label className="label font-semibold">
+              Present Location
+            </label>
+
             <input
               type="text"
               name="presentLocation"
@@ -156,7 +177,10 @@ const UpdateArtifact = () => {
           </div>
 
           <div className="md:col-span-2">
-            <label className="label font-semibold">Short Description</label>
+            <label className="label font-semibold">
+              Short Description
+            </label>
+
             <textarea
               name="shortDescription"
               defaultValue={artifact?.shortDescription}
@@ -166,7 +190,10 @@ const UpdateArtifact = () => {
           </div>
 
           <div className="md:col-span-2">
-            <label className="label font-semibold">Historical Context</label>
+            <label className="label font-semibold">
+              Historical Context
+            </label>
+
             <textarea
               name="historicalContext"
               defaultValue={artifact?.historicalContext}

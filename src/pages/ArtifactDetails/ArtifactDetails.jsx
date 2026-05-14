@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
+import axios from "axios";
 import AuthContext from "../../context/AuthContext";
 
 const ArtifactDetails = () => {
@@ -10,13 +11,15 @@ const ArtifactDetails = () => {
   const [artifact, setArtifact] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const isLiked = artifact?.likedBy?.includes(user?.email);
+
   useEffect(() => {
     document.title = "Artifact Details | ArtifactVault";
 
-    fetch(`http://localhost:5000/artifacts/${id}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setArtifact(data);
+    axios
+      .get(`http://localhost:3000/artifacts/${id}`)
+      .then((res) => {
+        setArtifact(res.data);
         setLoading(false);
       })
       .catch(() => {
@@ -25,27 +28,30 @@ const ArtifactDetails = () => {
       });
   }, [id]);
 
-  const handleLike = () => {
-    fetch(`http://localhost:5000/artifacts/like/${id}`, {
-      method: "PATCH",
-      headers: {
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({ email: user?.email }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.modifiedCount > 0) {
+  const handleLikeToggle = () => {
+    axios
+      .patch(`http://localhost:3000/artifacts/like-toggle/${id}`, {
+        email: user?.email,
+      })
+      .then((res) => {
+        if (res.data.modifiedCount > 0) {
+          const likedNow = !isLiked;
+
           setArtifact({
             ...artifact,
-            likeCount: artifact.likeCount + 1,
+            likeCount: likedNow
+              ? (artifact.likeCount || 0) + 1
+              : (artifact.likeCount || 0) - 1,
+            likedBy: likedNow
+              ? [...(artifact.likedBy || []), user.email]
+              : artifact.likedBy.filter((email) => email !== user.email),
           });
 
-          toast.success("Artifact liked");
+          toast.success(likedNow ? "Artifact liked" : "Artifact unliked");
         }
       })
       .catch(() => {
-        toast.error("Failed to like artifact");
+        toast.error("Failed to update like");
       });
   };
 
@@ -60,9 +66,7 @@ const ArtifactDetails = () => {
   if (!artifact) {
     return (
       <div className="text-center py-20">
-        <h2 className="text-3xl font-bold text-red-500">
-          Artifact not found
-        </h2>
+        <h2 className="text-3xl font-bold text-red-500">Artifact not found</h2>
       </div>
     );
   }
@@ -84,9 +88,7 @@ const ArtifactDetails = () => {
               {artifact.artifactName}
             </h1>
 
-            <p className="text-gray-600 mb-6">
-              {artifact.shortDescription}
-            </p>
+            <p className="text-gray-600 mb-6">{artifact.shortDescription}</p>
 
             <div className="grid md:grid-cols-2 gap-4 text-sm">
               <p>
@@ -132,10 +134,14 @@ const ArtifactDetails = () => {
 
             <div className="mt-8 flex items-center gap-4">
               <button
-                onClick={handleLike}
-                className="btn bg-yellow-500 hover:bg-yellow-600 border-none text-black font-bold px-8"
+                onClick={handleLikeToggle}
+                className={`btn border-none text-black font-bold px-8 ${
+                  isLiked
+                    ? "bg-red-400 hover:bg-red-500"
+                    : "bg-yellow-500 hover:bg-yellow-600"
+                }`}
               >
-                ❤️ Like
+                {isLiked ? "💔 Unlike" : "❤️ Like"}
               </button>
 
               <p className="text-xl font-bold text-[#2b1d12]">
