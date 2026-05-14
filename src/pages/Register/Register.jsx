@@ -1,65 +1,120 @@
-import Lottie from 'lottie-react';
-import React, { useContext } from 'react';
-import registerLottieData from '../../assets/lottie/register.json';
-import AuthContext from '../../context/AuthContext';
-import SocialLogin from '../shared/SocialLogin';
+import { useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+
+import AuthContext from "../../context/AuthContext";
 
 const Register = () => {
+  const { createUser, updateUserProfile } = useContext(AuthContext);
+  const navigate = useNavigate();
 
-    const { createUser } = useContext(AuthContext);
+  const handleRegister = (e) => {
+    e.preventDefault();
 
-    const handleRegister = e => {
-        e.preventDefault();
-        const form = e.target;
-        const email = form.email.value;
-        const password = form.password.value;
-        console.log(email, password);
+    const form = e.target;
 
-        // password validation: 
-        // show password validation error
-        createUser(email, password)
-            .then(result => {
-                console.log(result.user)
-            })
-            .catch(error => {
-                console.log(error.message)
-            })
+    const name = form.name.value;
+    const email = form.email.value;
+    const photoURL = form.photoURL.value;
+    const password = form.password.value;
 
+    if (!/[A-Z]/.test(password)) {
+      toast.error("Password must have an uppercase letter");
+      return;
     }
 
-    return (
-        <div className="hero bg-base-200 min-h-screen">
-            <div className="hero-content flex-col lg:flex-row-reverse">
-                <div className="text-center lg:text-left w-96">
-                    <Lottie animationData={registerLottieData}></Lottie>
-                </div>
-                <div className="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl">
-                    <h1 className="ml-8 mt-4 text-5xl font-bold">Register now!</h1>
-                    <form onSubmit={handleRegister} className="card-body">
-                        <div className="form-control">
-                            <label className="label">
-                                <span className="label-text">Email</span>
-                            </label>
-                            <input type="email" name='email' placeholder="email" className="input input-bordered" required />
-                        </div>
-                        <div className="form-control">
-                            <label className="label">
-                                <span className="label-text">Password</span>
-                            </label>
-                            <input type="password" name='password' placeholder="password" className="input input-bordered" required />
-                            <label className="label">
-                                <a href="#" className="label-text-alt link link-hover">Forgot password?</a>
-                            </label>
-                        </div>
-                        <div className="form-control mt-6">
-                            <button className="btn btn-primary">Register</button>
-                        </div>
-                    </form>
-                    <SocialLogin></SocialLogin>
-                </div>
-            </div>
-        </div>
-    );
+    if (!/[a-z]/.test(password)) {
+      toast.error("Password must have a lowercase letter");
+      return;
+    }
+
+    if (password.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
+
+    createUser(email, password)
+      .then(() => {
+        updateUserProfile(name, photoURL)
+          .then(() => {
+            toast.success("Registration Successful");
+            navigate("/signIn");
+          })
+          .catch(() => {
+            toast.error("Profile update failed");
+          });
+      })
+      .catch((error) => {
+        toast.error(error.message);
+      });
+  };
+
+  return (
+    <div className="min-h-screen bg-[#f8f4ec] flex items-center justify-center px-4">
+      <div className="card bg-white w-full max-w-md shadow-2xl border border-yellow-200">
+        <h1 className="text-4xl font-bold text-center mt-8 text-[#2b1d12]">
+          Register Now
+        </h1>
+
+        <form onSubmit={handleRegister} className="card-body">
+          <div>
+            <label className="label font-semibold">Name</label>
+            <input
+              type="text"
+              name="name"
+              placeholder="Enter your name"
+              className="input input-bordered w-full"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="label font-semibold">Email</label>
+            <input
+              type="email"
+              name="email"
+              placeholder="Enter your email"
+              className="input input-bordered w-full"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="label font-semibold">Photo URL</label>
+            <input
+              type="text"
+              name="photoURL"
+              placeholder="Enter photo URL"
+              className="input input-bordered w-full"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="label font-semibold">Password</label>
+            <input
+              type="password"
+              name="password"
+              placeholder="Enter password"
+              className="input input-bordered w-full"
+              required
+            />
+          </div>
+
+          <button className="btn bg-yellow-500 hover:bg-yellow-600 border-none w-full text-black font-bold mt-4">
+            Register
+          </button>
+
+          <p className="text-center mt-4">
+            Already have an account?{" "}
+            <Link to="/signIn" className="text-yellow-600 font-bold">
+              Login
+            </Link>
+          </p>
+        </form>
+      </div>
+    </div>
+  );
 };
 
 export default Register;

@@ -12,43 +12,56 @@ const Navbar = () => {
       .catch(() => toast.error("Logout failed"));
   };
 
+  const linkStyle = ({ isActive }) =>
+    isActive
+      ? "text-yellow-400 font-bold bg-transparent"
+      : "text-white hover:text-yellow-400 bg-transparent";
+
   const navLinks = (
     <>
       <li>
-        <NavLink to="/">Home</NavLink>
+        <NavLink to="/" className={linkStyle}>
+          Home
+        </NavLink>
       </li>
+
       <li>
-        <NavLink to="/all-artifacts">All Artifacts</NavLink>
+        <NavLink to="/all-artifacts" className={linkStyle}>
+          All Artifacts
+        </NavLink>
       </li>
+
       <li>
-        <NavLink to="/add-artifact">Add Artifacts</NavLink>
+        <NavLink to="/add-artifact" className={linkStyle}>
+          Add Artifacts
+        </NavLink>
       </li>
     </>
   );
 
   return (
-    <div className="navbar sticky top-0 z-50 bg-[#2b1d12]/95 text-white shadow-lg px-4 lg:px-10">
+    <div className="navbar sticky top-0 z-50 bg-[#2b1d12] text-white shadow-lg px-4 lg:px-10">
       <div className="navbar-start">
         <div className="dropdown">
-          <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
+          <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden text-white">
             ☰
           </div>
 
           <ul
             tabIndex={0}
-            className="menu menu-sm dropdown-content mt-3 z-50 p-3 shadow bg-[#2b1d12] rounded-box w-56"
+            className="menu menu-sm dropdown-content mt-3 z-50 p-4 shadow bg-[#2b1d12] rounded-xl w-56"
           >
             {navLinks}
           </ul>
         </div>
 
-        <Link to="/" className="text-2xl font-extrabold tracking-wide">
+        <Link to="/" className="text-xl md:text-2xl font-extrabold tracking-wide">
           🏺 Artifact<span className="text-yellow-400">Vault</span>
         </Link>
       </div>
 
       <div className="navbar-center hidden lg:flex">
-        <ul className="menu menu-horizontal px-1 gap-2 font-semibold">
+        <ul className="menu menu-horizontal px-1 gap-4 font-semibold">
           {navLinks}
         </ul>
       </div>
@@ -63,16 +76,12 @@ const Navbar = () => {
           </Link>
         ) : (
           <div className="dropdown dropdown-end">
-            <div
-              tabIndex={0}
-              role="button"
-              className="avatar cursor-pointer"
-            >
-              <div className="w-11 rounded-full ring ring-yellow-400 ring-offset-base-100 ring-offset-2">
+            <div tabIndex={0} role="button" className="avatar cursor-pointer">
+              <div className="w-11 rounded-full ring ring-yellow-400 ring-offset-2 ring-offset-[#2b1d12]">
                 <img
                   src={
                     user?.photoURL ||
-                    "https://i.ibb.co.com/4pDNDk1/avatar.png"
+                    "https://i.ibb.co/5GzXkwq/user.png"
                   }
                   alt="User"
                 />
@@ -81,13 +90,15 @@ const Navbar = () => {
 
             <ul
               tabIndex={0}
-              className="menu dropdown-content mt-4 z-50 p-4 shadow-2xl bg-white text-[#2b1d12] rounded-2xl w-64"
+              className="menu dropdown-content mt-4 z-50 p-4 shadow-2xl bg-white text-[#2b1d12] rounded-2xl w-72"
             >
-              <li className="mb-3">
+              <li className="mb-2 px-2">
                 <p className="font-bold text-lg">
                   {user?.displayName || "User"}
                 </p>
-                <p className="text-sm text-gray-500">{user?.email}</p>
+                <p className="text-sm text-gray-500 break-all">
+                  {user?.email}
+                </p>
               </li>
 
               <div className="divider my-1"></div>
@@ -105,7 +116,7 @@ const Navbar = () => {
               <li>
                 <button
                   onClick={handleLogout}
-                  className="bg-red-500 hover:bg-red-600 text-white font-bold rounded-lg"
+                  className="bg-red-500 hover:bg-red-600 text-white font-bold rounded-lg justify-center"
                 >
                   Logout
                 </button>
