@@ -31,7 +31,7 @@ const Banner = () => {
   ];
 
   return (
-    <div className="mb-16">
+    <div className="mb-16 mt-16">
       <Swiper
         modules={[Autoplay, Pagination]}
         autoplay={{

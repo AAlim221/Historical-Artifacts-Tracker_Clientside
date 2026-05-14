@@ -6,7 +6,7 @@ import Footer from "../pages/shared/Footer";
 
 const MainLayout = () => {
   return (
-    <div className="bg-[#f8f4ec] min-h-screen">
+    <div className="bg-[#f8f4ec] min-h-screen mb-8 ">
 
       {/* Navbar Full Width */}
       <Navbar />
