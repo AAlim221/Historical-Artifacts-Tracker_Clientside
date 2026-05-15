@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import axios from "axios";
+
 import AuthContext from "../../context/AuthContext";
 
 const ArtifactDetails = () => {
@@ -22,7 +23,8 @@ const ArtifactDetails = () => {
         setArtifact(res.data);
         setLoading(false);
       })
-      .catch(() => {
+      .catch((error) => {
+        console.log(error);
         toast.error("Failed to load artifact");
         setLoading(false);
       });
@@ -30,9 +32,19 @@ const ArtifactDetails = () => {
 
   const handleLikeToggle = () => {
     axios
-      .patch(`http://localhost:3000/artifacts/like-toggle/${id}`, {
-        email: user?.email,
-      })
+      .patch(
+        `http://localhost:3000/artifacts/like-toggle/${id}`,
+        {
+          email: user?.email,
+        },
+        {
+          headers: {
+            authorization: `Bearer ${localStorage.getItem(
+              "access-token"
+            )}`,
+          },
+        }
+      )
       .then((res) => {
         if (res.data.modifiedCount > 0) {
           const likedNow = !isLiked;
@@ -42,15 +54,23 @@ const ArtifactDetails = () => {
             likeCount: likedNow
               ? (artifact.likeCount || 0) + 1
               : (artifact.likeCount || 0) - 1,
+
             likedBy: likedNow
               ? [...(artifact.likedBy || []), user.email]
-              : artifact.likedBy.filter((email) => email !== user.email),
+              : artifact.likedBy.filter(
+                  (email) => email !== user.email
+                ),
           });
 
-          toast.success(likedNow ? "Artifact liked" : "Artifact unliked");
+          toast.success(
+            likedNow
+              ? "Artifact liked"
+              : "Artifact unliked"
+          );
         }
       })
-      .catch(() => {
+      .catch((error) => {
+        console.log(error);
         toast.error("Failed to update like");
       });
   };
@@ -66,7 +86,9 @@ const ArtifactDetails = () => {
   if (!artifact) {
     return (
       <div className="text-center py-20">
-        <h2 className="text-3xl font-bold text-red-500">Artifact not found</h2>
+        <h2 className="text-3xl font-bold text-red-500">
+          Artifact not found
+        </h2>
       </div>
     );
   }
@@ -88,7 +110,9 @@ const ArtifactDetails = () => {
               {artifact.artifactName}
             </h1>
 
-            <p className="text-gray-600 mb-6">{artifact.shortDescription}</p>
+            <p className="text-gray-600 mb-6">
+              {artifact.shortDescription}
+            </p>
 
             <div className="grid md:grid-cols-2 gap-4 text-sm">
               <p>
@@ -112,7 +136,9 @@ const ArtifactDetails = () => {
               </p>
 
               <p className="md:col-span-2">
-                <span className="font-bold">Present Location:</span>{" "}
+                <span className="font-bold">
+                  Present Location:
+                </span>{" "}
                 {artifact.presentLocation}
               </p>
 

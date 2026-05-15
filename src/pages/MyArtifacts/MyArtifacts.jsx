@@ -18,7 +18,16 @@ const MyArtifacts = () => {
 
     if (user?.email) {
       axios
-        .get(`http://localhost:3000/my-artifacts?email=${user.email}`)
+        .get(
+          `http://localhost:3000/my-artifacts?email=${user.email}`,
+          {
+            headers: {
+              authorization: `Bearer ${localStorage.getItem(
+                "access-token"
+              )}`,
+            },
+          }
+        )
         .then((res) => {
           setArtifacts(res.data);
           setLoading(false);
@@ -42,7 +51,13 @@ const MyArtifacts = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-          .delete(`http://localhost:5000/artifacts/${id}`)
+          .delete(`http://localhost:3000/artifacts/${id}`, {
+            headers: {
+              authorization: `Bearer ${localStorage.getItem(
+                "access-token"
+              )}`,
+            },
+          })
           .then((res) => {
             if (res.data.deletedCount > 0) {
               Swal.fire(
@@ -56,12 +71,18 @@ const MyArtifacts = () => {
               );
 
               setArtifacts(remaining);
+
               navigate("/all-artifacts");
             }
           })
           .catch((error) => {
             console.log(error);
-            Swal.fire("Error!", "Failed to delete artifact.", "error");
+
+            Swal.fire(
+              "Error!",
+              "Failed to delete artifact.",
+              "error"
+            );
           });
       }
     });
@@ -93,8 +114,8 @@ const MyArtifacts = () => {
             </h3>
 
             <p className="text-gray-600 mt-4">
-              You have not added any artifact yet. Add your first historical
-              artifact now.
+              You have not added any artifact yet. Add your first
+              historical artifact now.
             </p>
 
             <Link
@@ -145,7 +166,9 @@ const MyArtifacts = () => {
                     </Link>
 
                     <button
-                      onClick={() => handleDelete(artifact._id)}
+                      onClick={() =>
+                        handleDelete(artifact._id)
+                      }
                       className="btn bg-red-500 hover:bg-red-600 border-none text-white font-bold"
                     >
                       Delete

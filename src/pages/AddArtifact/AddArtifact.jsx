@@ -22,10 +22,8 @@ const AddArtifact = () => {
       discoveredAt: form.discoveredAt.value,
       discoveredBy: form.discoveredBy.value,
       presentLocation: form.presentLocation.value,
-
       adderName: user?.displayName,
       adderEmail: user?.email,
-
       likeCount: 0,
       likedBy: [],
     };
@@ -33,7 +31,12 @@ const AddArtifact = () => {
     try {
       const { data } = await axios.post(
         "http://localhost:3000/artifacts",
-        newArtifact
+        newArtifact,
+        {
+          headers: {
+            authorization: `Bearer ${localStorage.getItem("access-token")}`,
+          },
+        }
       );
 
       if (data.insertedId) {
@@ -53,44 +56,20 @@ const AddArtifact = () => {
           Add New Artifact
         </h2>
 
-        <form
-          onSubmit={handleAddArtifact}
-          className="grid md:grid-cols-2 gap-6"
-        >
+        <form onSubmit={handleAddArtifact} className="grid md:grid-cols-2 gap-6">
           <div>
             <label className="label font-semibold">Artifact Name</label>
-
-            <input
-              type="text"
-              name="artifactName"
-              className="input input-bordered w-full"
-              placeholder="Rosetta Stone"
-              required
-            />
+            <input name="artifactName" type="text" className="input input-bordered w-full" placeholder="Rosetta Stone" required />
           </div>
 
           <div>
-            <label className="label font-semibold">
-              Artifact Image URL
-            </label>
-
-            <input
-              type="url"
-              name="artifactImage"
-              className="input input-bordered w-full"
-              placeholder="https://example.com/image.jpg"
-              required
-            />
+            <label className="label font-semibold">Artifact Image URL</label>
+            <input name="artifactImage" type="url" className="input input-bordered w-full" placeholder="https://example.com/image.jpg" required />
           </div>
 
           <div>
             <label className="label font-semibold">Artifact Type</label>
-
-            <select
-              name="artifactType"
-              className="select select-bordered w-full"
-              required
-            >
+            <select name="artifactType" className="select select-bordered w-full" required>
               <option value="">Select Type</option>
               <option value="Tools">Tools</option>
               <option value="Weapons">Weapons</option>
@@ -104,98 +83,42 @@ const AddArtifact = () => {
 
           <div>
             <label className="label font-semibold">Created At</label>
-
-            <input
-              type="text"
-              name="createdAt"
-              className="input input-bordered w-full"
-              placeholder="100 BC"
-              required
-            />
+            <input name="createdAt" type="text" className="input input-bordered w-full" placeholder="100 BC" required />
           </div>
 
           <div>
             <label className="label font-semibold">Discovered At</label>
-
-            <input
-              type="text"
-              name="discoveredAt"
-              className="input input-bordered w-full"
-              placeholder="1799"
-              required
-            />
+            <input name="discoveredAt" type="text" className="input input-bordered w-full" placeholder="1799" required />
           </div>
 
           <div>
             <label className="label font-semibold">Discovered By</label>
-
-            <input
-              type="text"
-              name="discoveredBy"
-              className="input input-bordered w-full"
-              placeholder="Pierre-François Bouchard"
-              required
-            />
+            <input name="discoveredBy" type="text" className="input input-bordered w-full" placeholder="Pierre-François Bouchard" required />
           </div>
 
           <div>
             <label className="label font-semibold">Present Location</label>
-
-            <input
-              type="text"
-              name="presentLocation"
-              className="input input-bordered w-full"
-              placeholder="British Museum"
-              required
-            />
+            <input name="presentLocation" type="text" className="input input-bordered w-full" placeholder="British Museum" required />
           </div>
 
           <div>
             <label className="label font-semibold">Adder Name</label>
-
-            <input
-              type="text"
-              value={user?.displayName || ""}
-              readOnly
-              className="input input-bordered w-full bg-gray-100"
-            />
+            <input type="text" value={user?.displayName || ""} readOnly className="input input-bordered w-full bg-gray-100" />
           </div>
 
           <div>
             <label className="label font-semibold">Adder Email</label>
-
-            <input
-              type="email"
-              value={user?.email || ""}
-              readOnly
-              className="input input-bordered w-full bg-gray-100"
-            />
+            <input type="email" value={user?.email || ""} readOnly className="input input-bordered w-full bg-gray-100" />
           </div>
 
           <div className="md:col-span-2">
-            <label className="label font-semibold">
-              Short Description
-            </label>
-
-            <textarea
-              name="shortDescription"
-              className="textarea textarea-bordered w-full"
-              placeholder="Write a short description"
-              required
-            ></textarea>
+            <label className="label font-semibold">Short Description</label>
+            <textarea name="shortDescription" className="textarea textarea-bordered w-full" placeholder="Write a short description" required />
           </div>
 
           <div className="md:col-span-2">
-            <label className="label font-semibold">
-              Historical Context
-            </label>
-
-            <textarea
-              name="historicalContext"
-              className="textarea textarea-bordered w-full min-h-32"
-              placeholder="Write historical context"
-              required
-            ></textarea>
+            <label className="label font-semibold">Historical Context</label>
+            <textarea name="historicalContext" className="textarea textarea-bordered w-full min-h-32" placeholder="Write historical context" required />
           </div>
 
           <div className="md:col-span-2">

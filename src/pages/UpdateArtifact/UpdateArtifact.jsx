@@ -47,7 +47,14 @@ const UpdateArtifact = () => {
     try {
       const { data } = await axios.put(
         `http://localhost:3000/artifacts/${id}`,
-        updatedArtifact
+        updatedArtifact,
+        {
+          headers: {
+            authorization: `Bearer ${localStorage.getItem(
+              "access-token"
+            )}`,
+          },
+        }
       );
 
       if (data.modifiedCount > 0) {
@@ -80,7 +87,9 @@ const UpdateArtifact = () => {
           className="grid md:grid-cols-2 gap-6"
         >
           <div>
-            <label className="label font-semibold">Artifact Name</label>
+            <label className="label font-semibold">
+              Artifact Name
+            </label>
 
             <input
               type="text"
@@ -106,7 +115,9 @@ const UpdateArtifact = () => {
           </div>
 
           <div>
-            <label className="label font-semibold">Artifact Type</label>
+            <label className="label font-semibold">
+              Artifact Type
+            </label>
 
             <select
               name="artifactType"
@@ -127,7 +138,9 @@ const UpdateArtifact = () => {
           </div>
 
           <div>
-            <label className="label font-semibold">Created At</label>
+            <label className="label font-semibold">
+              Created At
+            </label>
 
             <input
               type="text"
@@ -139,7 +152,9 @@ const UpdateArtifact = () => {
           </div>
 
           <div>
-            <label className="label font-semibold">Discovered At</label>
+            <label className="label font-semibold">
+              Discovered At
+            </label>
 
             <input
               type="text"
@@ -151,7 +166,9 @@ const UpdateArtifact = () => {
           </div>
 
           <div>
-            <label className="label font-semibold">Discovered By</label>
+            <label className="label font-semibold">
+              Discovered By
+            </label>
 
             <input
               type="text"

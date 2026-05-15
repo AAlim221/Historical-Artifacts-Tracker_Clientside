@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import axios from "axios";
 import AuthContext from "./AuthContext";
 
 import {
@@ -37,7 +38,7 @@ const AuthProvider = ({ children }) => {
   const updateUserProfile = (name, photoURL) => {
     return updateProfile(auth.currentUser, {
       displayName: name,
-      photoURL: photoURL,
+      photoURL,
     });
   };
 
@@ -49,7 +50,23 @@ const AuthProvider = ({ children }) => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
-      setLoading(false);
+
+      if (currentUser?.email) {
+        axios
+          .post("http://localhost:3000/jwt", {
+            email: currentUser.email,
+          })
+          .then((res) => {
+            localStorage.setItem("access-token", res.data.token);
+            setLoading(false);
+          })
+          .catch(() => {
+            setLoading(false);
+          });
+      } else {
+        localStorage.removeItem("access-token");
+        setLoading(false);
+      }
     });
 
     return () => unsubscribe();
