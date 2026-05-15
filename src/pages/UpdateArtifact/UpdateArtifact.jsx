@@ -15,7 +15,7 @@ const UpdateArtifact = () => {
     document.title = "Update Artifact | ArtifactVault";
 
     axios
-      .get(`http://localhost:3000/artifacts/${id}`)
+      .get(`https://historical-server.vercel.app/artifacts/${id}`)
       .then((res) => {
         setArtifact(res.data);
         setLoading(false);
@@ -46,7 +46,7 @@ const UpdateArtifact = () => {
 
     try {
       const { data } = await axios.put(
-        `http://localhost:3000/artifacts/${id}`,
+        `https://historical-server.vercel.app/artifacts/${id}`,
         updatedArtifact,
         {
           headers: {

@@ -19,7 +19,7 @@ const MyArtifacts = () => {
     if (user?.email) {
       axios
         .get(
-          `http://localhost:3000/my-artifacts?email=${user.email}`,
+          `https://historical-server.vercel.app/my-artifacts?email=${user.email}`,
           {
             headers: {
               authorization: `Bearer ${localStorage.getItem(
@@ -51,7 +51,7 @@ const MyArtifacts = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-          .delete(`http://localhost:3000/artifacts/${id}`, {
+          .delete(`https://historical-server.vercel.app/artifacts/${id}`, {
             headers: {
               authorization: `Bearer ${localStorage.getItem(
                 "access-token"

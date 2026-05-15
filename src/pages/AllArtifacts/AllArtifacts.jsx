@@ -18,7 +18,7 @@ const AllArtifacts = () => {
 
     try {
       const { data } = await axios.get(
-        `http://localhost:3000/search-artifacts?search=${search}`
+        `https://historical-server.vercel.app/search-artifacts?search=${search}`
       );
 
       setArtifacts(data);

@@ -18,7 +18,7 @@ const ArtifactDetails = () => {
     document.title = "Artifact Details | ArtifactVault";
 
     axios
-      .get(`http://localhost:3000/artifacts/${id}`)
+      .get(`https://historical-server.vercel.app/artifacts/${id}`)
       .then((res) => {
         setArtifact(res.data);
         setLoading(false);
@@ -33,7 +33,7 @@ const ArtifactDetails = () => {
   const handleLikeToggle = () => {
     axios
       .patch(
-        `http://localhost:3000/artifacts/like-toggle/${id}`,
+        `https://historical-server.vercel.app/artifacts/like-toggle/${id}`,
         {
           email: user?.email,
         },

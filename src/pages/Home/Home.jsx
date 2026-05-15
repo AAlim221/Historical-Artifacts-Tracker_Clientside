@@ -13,7 +13,7 @@ const Home = () => {
     document.title = "Home | ArtifactVault";
 
     axios
-      .get("http://localhost:3000/featured-artifacts")
+      .get("https://historical-server.vercel.app/featured-artifacts")
       .then((res) => {
         setArtifacts(res.data);
         setLoading(false);

@@ -30,7 +30,7 @@ const AddArtifact = () => {
 
     try {
       const { data } = await axios.post(
-        "http://localhost:3000/artifacts",
+        "https://historical-server.vercel.app/artifacts",
         newArtifact,
         {
           headers: {

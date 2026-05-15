@@ -15,7 +15,7 @@ const LikedArtifacts = () => {
 
     if (user?.email) {
       axios
-        .get(`http://localhost:3000/liked-artifacts?email=${user.email}`, {
+        .get(`https://historical-server.vercel.app/liked-artifacts?email=${user.email}`, {
           headers: {
             authorization: `Bearer ${localStorage.getItem("access-token")}`,
           },

@@ -53,7 +53,7 @@ const AuthProvider = ({ children }) => {
 
       if (currentUser?.email) {
         axios
-          .post("http://localhost:3000/jwt", {
+          .post("https://historical-server.vercel.app/jwt", {
             email: currentUser.email,
           })
           .then((res) => {
